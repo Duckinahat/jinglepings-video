@@ -82,6 +82,8 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--scale', type=str, default='32x32', help='rescale image')
     parser.add_argument('-n', '--threadnum', type=int, default=10, help='number of threads to use for ping')
     parser.add_argument('-r', '--repeats', type=int, default=10, help='number of times to resend frame')
+    parser.add_argument('-I', '--interlaced', action='store_true', help='use interlaced mode')
+
 
 
     args = parser.parse_args()
@@ -90,4 +92,9 @@ if __name__ == "__main__":
         play_test(args.x_offset, args.y_offset, args.scale, args.threadnum)
 
     elif args.input:
-        play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
+
+        if args.interlaced:
+            play_movie_interlaced(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
+
+        else:
+            play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
