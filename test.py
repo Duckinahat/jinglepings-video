@@ -3,7 +3,7 @@ from multiping import multi_ping
 import os
 import argparse
 
-from image2ipv6 import convert_image
+from image2ipv6 import *
 
 ip_address = "2001:4c08:2028:{X}:{Y}:{AA:x}:{BB:x}:{CC:x}"
 rows = []
@@ -37,6 +37,7 @@ def spam_them(threadnum, x_off, y_off, size):
         threads.append(t)
         t.start()
 
+
 def play_frame(addresses, threadnum):
     threads = []
     for i in range(threadnum):
@@ -52,6 +53,15 @@ def play_movie(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, r
             print("sending frame {}".format(filename))
             for i in range(repeat):
                 play_frame(frame, threadnum)
+
+def play_movie_interlaced(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, repeat=1):
+    for filename in sorted(os.listdir(input_directory)):
+        rows = convert_image_interlaced(os.path.join(input_directory, filename), x_offset, y_offset, scale)
+        print("sending frame {}".format(filename))
+
+        for row in rows:
+            for i in range(repeat):
+                play_frame(row, threadnum)
 
 def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)

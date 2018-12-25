@@ -7,10 +7,8 @@ from PIL import Image
 
 IP_ADDRESS = "2001:4c08:2028:{X}:{Y}:{AA:x}:{BB:x}:{CC:x}"
 
-def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
+def pre_process(input_file, x_offset=0, y_offset=0, scale=''):
     with Image.open(input_file) as img:
-        addresses = []
-
         if scale:
             match = re.match(r'(?P<width>\d+)[xX, /](?P<height>\d+)', scale)
 
@@ -22,25 +20,76 @@ def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
 
         if img.height + y_offset > 120:
             warn('Image too tall')
-            return []
+            return None
 
         if img.width + x_offset > 160:
             warn('Image too wide')
-            return []
+            return None
 
-        for y in range(img.height):
+        return img
 
-            for x in range(img.width):
+def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
+    img = pre_process(input_file, x_offset, y_offset, scale)
 
-                r, g, b = img.getpixel((x, y))
-                values = {'Y': y + y_offset,
-                          'X': x + x_offset,
-                          'AA': r,
-                          'BB': g,
-                          'CC': b}
-                addresses.append(IP_ADDRESS.format(**values))
+    if img:
+        return get_addresses(img, x_offset, y_offset)
 
-        return addresses
+def convert_image_interlaced(input_file, x_offset=0, y_offset=0, scale=''):
+    img = pre_process(input_file, x_offset, y_offset, scale)
+
+    if img:
+        rows = get_rows(img, x_offset, y_offset)
+        return interlace_rows(rows)
+
+def get_addresses(img, y_offset=0, x_offset=0):
+    addresses = []
+
+    for y in range(img.height):
+
+        for x in range(img.width):
+            r, g, b = img.getpixel((x, y))
+            values = {'Y': y + y_offset,
+                      'X': x + x_offset,
+                      'AA': r,
+                      'BB': g,
+                      'CC': b}
+            addresses.append(IP_ADDRESS.format(**values))
+
+    return addresses
+
+def get_rows(img, y_offset=0, x_offset=0):
+    rows = []
+
+    for y in range(img.height):
+
+        row = []
+        for x in range(img.width):
+            r, g, b = img.getpixel((x, y))
+            values = {'Y': y + y_offset,
+                      'X': x + x_offset,
+                      'AA': r,
+                      'BB': g,
+                      'CC': b}
+            row.append(IP_ADDRESS.format(**values))
+
+        rows.append(row)
+
+    return rows
+
+def interlace_rows(rows):
+    interlaced = []
+    forward = True
+
+    for row in rows:
+        if forward:
+            interlaced.append(row)
+
+        else:
+            interlaced.append(reversed(row))
+
+        forward = not forward
+
+    return interlaced
 
 
 if __name__ == "__main__":
