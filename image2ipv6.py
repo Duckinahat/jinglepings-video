@@ -7,7 +7,7 @@ from PIL import Image
 
 IP_ADDRESS = "2001:4c08:2028:{X}:{Y}:{AA:x}:{BB:x}:{CC:x}"
 
-def pre_process(input_file, x_offset=0, y_offset=0, scale=''):
+def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
     with Image.open(input_file) as img:
         if scale:
             match = re.match(r'(?P<width>\d+)[xX, /](?P<height>\d+)', scale)
@@ -26,18 +26,27 @@ def pre_process(input_file, x_offset=0, y_offset=0, scale=''):
             warn('Image too wide')
             return None
 
-        return img
-
-def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
-    img = pre_process(input_file, x_offset, y_offset, scale)
-
-    if img:
         return get_addresses(img, x_offset, y_offset)
 
 def convert_image_interlaced(input_file, x_offset=0, y_offset=0, scale=''):
-    img = pre_process(input_file, x_offset, y_offset, scale)
+    with Image.open(input_file) as img:
+        if scale:
+            match = re.match(r'(?P<width>\d+)[xX, /](?P<height>\d+)', scale)
 
-    if img:
+            if match:
+                values = match.groupdict()
+                scale = (int(values.get('width')), int(values.get('height')))
+
+                img.thumbnail(scale, Image.ANTIALIAS)
+
+        if img.height + y_offset > 120:
+            warn('Image too tall')
+            return None
+
+        if img.width + x_offset > 160:
+            warn('Image too wide')
+            return None
+
         rows = get_rows(img, x_offset, y_offset)
         return interlace_rows(rows)
 
