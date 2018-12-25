@@ -50,7 +50,7 @@ def convert_image_interlaced(input_file, x_offset=0, y_offset=0, scale=''):
         rows = get_rows(img, x_offset, y_offset)
         return interlace_rows(rows)
 
-def get_addresses(img, y_offset=0, x_offset=0):
+def get_addresses(img, x_offset=0, y_offset=0):
     addresses = []
 
     for y in range(img.height):
@@ -66,7 +66,7 @@ def get_addresses(img, y_offset=0, x_offset=0):
 
     return addresses
 
-def get_rows(img, y_offset=0, x_offset=0):
+def get_rows(img, x_offset=0, y_offset=0):
     rows = []
 
     for y in range(img.height):
