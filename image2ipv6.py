@@ -22,8 +22,11 @@ def convert_image(input_file, x_offset=0, y_offset=0, scale=''):
 
         if img.height + y_offset > 120:
             warn('Image too tall')
+            return []
+
         if img.width + x_offset > 160:
             warn('Image too wide')
+            return []
 
         for y in range(img.height):
 

@@ -47,13 +47,18 @@ def play_frame(addresses, threadnum):
 def play_movie(input_directory, x_offset=0, y_offset=0, scale='', quality=1):
     for filename in sorted(os.listdir(input_directory)):
         frame = convert_image(os.path.join(input_directory, filename), x_offset, y_offset, scale)
-        print("sending frame {}".format(filename))
-        play_frame(frame, quality)
+
+        if frame:
+            print("sending frame {}".format(filename))
+            play_frame(frame, quality)
 
 def play_test(x_offset=0, y_offset=0, scale='', quality=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
-    while True:
-        play_frame(frame, quality)
+
+    if frame:
+        print("sending test pattern")
+        while True:
+            play_frame(frame, quality)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
