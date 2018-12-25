@@ -94,7 +94,7 @@ def interlace_rows(rows):
             interlaced.append(row)
 
         else:
-            interlaced.append(reversed(row))
+            interlaced.append([addr for addr in reversed(row)])
 
         forward = not forward
 
