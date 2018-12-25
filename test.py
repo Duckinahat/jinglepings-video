@@ -44,21 +44,22 @@ def play_frame(addresses, threadnum):
         threads.append(t)
         t.start()
 
-def play_movie(input_directory, x_offset=0, y_offset=0, scale='', quality=1):
+def play_movie(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, repeat=1):
     for filename in sorted(os.listdir(input_directory)):
         frame = convert_image(os.path.join(input_directory, filename), x_offset, y_offset, scale)
 
         if frame:
             print("sending frame {}".format(filename))
-            play_frame(frame, quality)
+            for i in range(repeat):
+                play_frame(frame, threadnum)
 
-def play_test(x_offset=0, y_offset=0, scale='', quality=1):
+def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
 
     if frame:
         print("sending test pattern")
         while True:
-            play_frame(frame, quality)
+            play_frame(frame, threadnum)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -69,12 +70,14 @@ if __name__ == "__main__":
     parser.add_argument('-x', '--x_offset', type=int, default=0, help='x offset, 0-160')
     parser.add_argument('-y', '--y_offset', type=int, default=0, help='y offset, 0-120')
     parser.add_argument('-s', '--scale', type=str, default='32x32', help='rescale image')
-    parser.add_argument('-q', '--quality', type=int, default=100, help='number of threads to use for ping')
+    parser.add_argument('-n', '--threadnum', type=int, default=10, help='number of threads to use for ping')
+    parser.add_argument('-r', '--repeats', type=int, default=10, help='number of times to resend frame')
+
 
     args = parser.parse_args()
 
     if args.test:
-        play_test(args.x_offset, args.y_offset, args.scale, args.quality)
+        play_test(args.x_offset, args.y_offset, args.scale, args.threadnum)
 
     elif args.input:
-        play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.quality)
+        play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
