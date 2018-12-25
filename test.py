@@ -61,7 +61,7 @@ def play_movie_interlaced(input_directory, x_offset=0, y_offset=0, scale='', thr
 
         for row in rows:
             for i in range(repeat):
-                play_frame(row, threadnum)
+                multi_ping(row, 0.1)
 
 def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
