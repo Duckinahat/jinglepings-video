@@ -102,7 +102,7 @@ if __name__ == "__main__":
     elif args.input:
 
         if args.interlaced:
-            play_movie_interlaced(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
+            play_movie_interlaced(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeat)
 
         else:
-            play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum)
+            play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeat)
