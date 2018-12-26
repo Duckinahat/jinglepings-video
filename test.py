@@ -35,7 +35,7 @@ def spam_them(threadnum, x_off, y_off, size):
     for i in range(threadnum):
         t = threading.Thread(target=multi_ping, args=(addresses, 0.1))
         threads.append(t)
-        t.start()
+    t.start()
 
 
 def play_frame(addresses, threadnum):
@@ -69,7 +69,19 @@ def play_movie_interlaced(input_directory, x_offset=0, y_offset=0, scale='', thr
                     for i in range(threadnum):
                         t = threading.Thread(target=multi_ping, args=(row, 0.1))
                         threads.append(t)
-                        t.start()
+                    t.start()
+
+def play_movie_interlaced_threading(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, repeat=1):
+    for filename in sorted(os.listdir(input_directory)):
+        rows = convert_image_interlaced(os.path.join(input_directory, filename), x_offset, y_offset, scale)
+        print("sending frame {}".format(filename))
+
+        for row in rows:
+            threads = []
+            for i in range(repeat):
+                t = threading.Thread(target=play_frame, args=(row, threadnum))
+                threads.append(t)
+            t.start()
 
 def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
@@ -91,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument('-n', '--threadnum', type=int, default=10, help='number of threads to use for ping')
     parser.add_argument('-r', '--repeats', type=int, default=10, help='number of times to resend frame')
     parser.add_argument('-I', '--interlaced', action='store_true', help='use interlaced mode')
-
+    parser.add_argument('-IT', '--interlaced_threading', action='store_true', help='use interlaced threading mode')
 
 
     args = parser.parse_args()
@@ -103,6 +115,9 @@ if __name__ == "__main__":
 
         if args.interlaced:
             play_movie_interlaced(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
+
+        elif args.interlaced_threading:
+            play_movie_interlaced_threading(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
 
         else:
             play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
