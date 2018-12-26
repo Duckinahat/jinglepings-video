@@ -69,7 +69,7 @@ def play_movie_interlaced(input_directory, x_offset=0, y_offset=0, scale='', thr
                     for i in range(threadnum):
                         t = threading.Thread(target=multi_ping, args=(row, 0.1))
                         threads.append(t)
-                    t.start()
+                        t.start()
 
 def play_movie_interlaced_threading(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, repeat=1):
     for filename in sorted(os.listdir(input_directory)):
@@ -81,7 +81,7 @@ def play_movie_interlaced_threading(input_directory, x_offset=0, y_offset=0, sca
             for i in range(repeat):
                 t = threading.Thread(target=play_frame, args=(row, threadnum))
                 threads.append(t)
-            t.start()
+                t.start()
 
 def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
