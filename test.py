@@ -103,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--repeats', type=int, default=10, help='number of times to resend frame')
     parser.add_argument('-I', '--interlaced', action='store_true', help='use interlaced mode')
     parser.add_argument('-IT', '--interlaced_threading', action='store_true', help='use interlaced threading mode')
-    parser.add_argument('R', '--repeat', action='store_true', help='repeat the animation')
+    parser.add_argument('-R', '--repeat', action='store_true', help='repeat the animation')
 
     args = parser.parse_args()
 
