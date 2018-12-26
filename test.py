@@ -103,20 +103,30 @@ if __name__ == "__main__":
     parser.add_argument('-r', '--repeats', type=int, default=10, help='number of times to resend frame')
     parser.add_argument('-I', '--interlaced', action='store_true', help='use interlaced mode')
     parser.add_argument('-IT', '--interlaced_threading', action='store_true', help='use interlaced threading mode')
-
+    parser.add_argument('R', '--repeat', action='store_true', help='repeat the animation')
 
     args = parser.parse_args()
 
     if args.test:
         play_test(args.x_offset, args.y_offset, args.scale, args.threadnum)
 
+
+
     elif args.input:
 
         if args.interlaced:
-            play_movie_interlaced(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
+            play_function = play_movie_interlaced
 
         elif args.interlaced_threading:
-            play_movie_interlaced_threading(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
+            play_function = play_movie_interlaced_threading
 
         else:
-            play_movie(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
+            play_function = play_movie
+
+        if args.repeat:
+
+            while True:
+                play_function(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
+
+        else:
+            play_function(args.input, args.x_offset, args.y_offset, args.scale, args.threadnum, args.repeats)
