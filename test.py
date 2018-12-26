@@ -75,9 +75,8 @@ def play_movie_interlaced_threading(input_directory, x_offset=0, y_offset=0, sca
     for filename in sorted(os.listdir(input_directory)):
         rows = convert_image_interlaced(os.path.join(input_directory, filename), x_offset, y_offset, scale)
         print("sending frame {}".format(filename))
-
+        threads = []
         for row in rows:
-            threads = []
             for i in range(repeat):
                 t = threading.Thread(target=play_frame, args=(row, threadnum))
                 threads.append(t)
