@@ -7,18 +7,6 @@ from image2ipv6 import *
 
 ip_address = "2001:4c08:2028:{X}:{Y}:{AA:x}:{BB:x}:{CC:x}"
 rows = []
-def generate_addresses(size = 16,x_off= 0,y_off = 20):
-    addresses = []
-    for i in range(x_off,x_off+size):
-        for j in range(y_off, y_off+size):
-            values = {'X': i,
-                      'Y': j,
-                      'AA': int((i-x_off)/size * 255),
-                      'BB': 0,
-                      'CC': int(((j-y_off)/size * 255))}
-            addresses.append(ip_address.format(**values))
-    return addresses
-
 
 def get_addresses_from_file(filename):
     with open(filename,'r') as f:
@@ -28,15 +16,6 @@ def get_addresses_from_file(filename):
 def get_frames(foldername):
     for filename in sorted(os.listdir(foldername)):
         yield convert_image(os.path.join(foldername,filename))
-
-def spam_them(threadnum, x_off, y_off, size):
-    addresses = generate_addresses(size,x_off,y_off)
-    threads = []
-    for i in range(threadnum):
-        t = threading.Thread(target=multi_ping, args=(addresses, 0.1))
-        threads.append(t)
-    t.start()
-
 
 def play_frame(addresses, threadnum):
     threads = []
@@ -58,29 +37,26 @@ def play_movie_interlaced(input_directory, x_offset=0, y_offset=0, scale='', thr
     for filename in sorted(os.listdir(input_directory)):
         rows = convert_image_interlaced(os.path.join(input_directory, filename), x_offset, y_offset, scale)
         print("sending frame {}".format(filename))
+        threads = []
 
         for row in rows:
-            for i in range(repeat):
-                if threadnum == 1:
-                    multi_ping(row, 0.1)
 
-                else:
-                    threads = []
-                    for i in range(threadnum):
-                        t = threading.Thread(target=multi_ping, args=(row, 0.1))
-                        threads.append(t)
-                        t.start()
+            for i in range(threadnum):
+                t = threading.Thread(target=multi_ping, args=(row, 0.1))
+                threads.append(t)
+                t.start()
 
 def play_movie_interlaced_threading(input_directory, x_offset=0, y_offset=0, scale='', threadnum=1, repeat=1):
     for filename in sorted(os.listdir(input_directory)):
         rows = convert_image_interlaced(os.path.join(input_directory, filename), x_offset, y_offset, scale)
         print("sending frame {}".format(filename))
         threads = []
-        for row in rows:
-            for i in range(repeat):
-                t = threading.Thread(target=play_frame, args=(row, threadnum))
-                threads.append(t)
-                t.start()
+        for i in range(repeat):
+            
+            for row in rows:
+                    t = threading.Thread(target=play_frame, args=(row, threadnum))
+                    threads.append(t)
+                    t.start()
 
 def play_test(x_offset=0, y_offset=0, scale='', threadnum=1):
     frame = convert_image('test_pattern.png', x_offset, y_offset, scale)
@@ -109,8 +85,6 @@ if __name__ == "__main__":
 
     if args.test:
         play_test(args.x_offset, args.y_offset, args.scale, args.threadnum)
-
-
 
     elif args.input:
 
